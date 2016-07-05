@@ -5,5 +5,5 @@ Xposed module which allow to work with FingerPrint scanner after reboot and afte
 ## Requirments
 
 * Android 6.0
-* Xposed 78
+* Xposed 82
 * Phone which support FingerPrint Scanner
