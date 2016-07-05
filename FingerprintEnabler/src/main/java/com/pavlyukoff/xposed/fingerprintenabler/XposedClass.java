@@ -34,7 +34,7 @@ public class XposedClass extends Application implements IXposedHookLoadPackage {
 		}
 		*/
 
-		if (lpparam.packageName.equals("com.android.systemui")) {
+		//if (lpparam.packageName.equals("com.android.systemui")) {
 
 			findAndHookMethod("com.android.keyguard.KeyguardUpdateMonitor$StrongAuthTracker", lpparam.classLoader,
 					"isUnlockingWithFingerprintAllowed", new XC_MethodReplacement()
@@ -60,7 +60,7 @@ public class XposedClass extends Application implements IXposedHookLoadPackage {
 
 			Log.e(TAG, "Hooked : " + lpparam.packageName);
 
-		}
+		//}
 
 	}
 }
