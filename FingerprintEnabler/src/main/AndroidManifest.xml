@@ -14,7 +14,7 @@
             android:value="App which enable Fingerprint Scanner mode, disabled by Google in Android 6.0.1" />
         <meta-data
             android:name="xposedminversion"
-            android:value="78" />
+            android:value="82" />
     </application>
 
 </manifest>
