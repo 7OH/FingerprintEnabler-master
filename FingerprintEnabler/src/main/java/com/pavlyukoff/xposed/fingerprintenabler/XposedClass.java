@@ -10,126 +10,144 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 
 public class XposedClass extends Application implements IXposedHookLoadPackage {
-	private static final String TAG = "xposed_debug";
+	private static final String TAG = "FPE_debug";
 	private boolean isDebug = BuildConfig.DEBUG;
-	
+
+	private void LogE(Throwable e) {
+		if(isDebug)
+			Log.e(TAG, "Exception", e);
+	}
+
+	private void LogE(boolean hooked, String className, String methodName) {
+		if(!isDebug)
+			return;
+
+		Log.e(TAG,
+				"Hook : " + (hooked?"YES":"no") + " : " + methodName + " : " + className);
+	}
+
 	public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
 
 		boolean hooked;
+		String className;
+		String methodName;
 
-		//if (lpparam.packageName.equals("com.android.systemui")) {
+		if (lpparam.packageName.equals("com.android.systemui")) {
 
+			className	= "com.android.keyguard.KeyguardUpdateMonitor";
+
+			// 00.00 -------------------------------------------------------------------------------
+			//this MUST disable request PIN at all - DANGEROUS
+			/*
+			methodName	= "getUserCanSkipBouncer";
+			try {
+				hooked = true;
+				findAndHookMethod(className, lpparam.classLoader, methodName,
+						int.class,
+						new XC_MethodReplacement()
+						{
+							@Override
+							protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+								return true;
+							}
+						}
+				);
+			} catch (Throwable e){
+				hooked = false;
+				LogE(e);
+			}
+			LogE(hooked, className, methodName);
+			*/
+
+			// 00.01 -------------------------------------------------------------------------------
+			methodName	= "isUnlockingWithFingerprintAllowed";
+			try {
+				hooked = true;
+				findAndHookMethod(className, lpparam.classLoader, methodName,
+						XC_MethodReplacement.returnConstant(true));
+
+			} catch (Throwable e){
+				hooked = false;
+				LogE(e);
+			}
+			LogE(hooked, className, methodName);
+
+			// 00.02 -------------------------------------------------------------------------------
+			methodName	= "isUnlockWithFingerPrintPossible";
+			try {
+				hooked = true;
+				findAndHookMethod(className, lpparam.classLoader, methodName,
+						int.class,
+						XC_MethodReplacement.returnConstant(true));
+			} catch (Throwable e) {
+				hooked = false;
+				LogE(e);
+			}
+			LogE(hooked, className, methodName);
+
+			// 00.03 -------------------------------------------------------------------------------
+			methodName	= "isFingerprintDisabled";
+			try {
+				findAndHookMethod(className, lpparam.classLoader, methodName,
+						int.class,
+						XC_MethodReplacement.returnConstant(false));
+			} catch (Throwable e) {
+				hooked = false;
+				LogE(e);
+			}
+			LogE(hooked, className, methodName);
+
+			// 00.04 -------------------------------------------------------------------------------
+			methodName	= "shouldListenForFingerprint";
+			try {
+				findAndHookMethod(className, lpparam.classLoader, methodName,
+						XC_MethodReplacement.returnConstant(true));
+			} catch (Throwable e) {
+				hooked = false;
+				LogE(e);
+			}
+			LogE(hooked, className, methodName);
+
+			// 00.05 -------------------------------------------------------------------------------
+			methodName	= "isUnlockCompleted";
+			try {
+				findAndHookMethod(className, lpparam.classLoader, methodName,
+						XC_MethodReplacement.returnConstant(true));
+			} catch (Throwable e) {
+				hooked = false;
+				LogE(e);
+			}
+			LogE(hooked, className, methodName);
+
+			// 01.00 -------------------------------------------------------------------------------
+			className	= "com.android.keyguard.KeyguardUpdateMonitor$StrongAuthTracker";
+			methodName	= "isUnlockingWithFingerprintAllowed";
+			try {
+				hooked = true;
+				findAndHookMethod(className, lpparam.classLoader, methodName,
+						XC_MethodReplacement.returnConstant(true));
+			} catch (Throwable e){
+				hooked = false;
+				LogE(e);
+			}
+			LogE(hooked, className, methodName);
+
+			// 02.00 -------------------------------------------------------------------------------
+			className	= "com.android.internal.widget.LockPatternUtils$StrongAuthTracker";
+			methodName	= "isFingerprintAllowedForUser";
 			try
 			{
 				hooked = true;
-				findAndHookMethod("com.android.internal.widget.LockPatternUtils$StrongAuthTracker", lpparam.classLoader,
-						"isFingerprintAllowedForUser", int.class, new XC_MethodReplacement()
-						{
-							@Override
-							protected Object replaceHookedMethod(MethodHookParam param) throws Throwable
-							{
-								if(isDebug)
-									Log.e(TAG, "isFingerprintAllowedForUser for <" + lpparam.packageName + ">");
-								return true;
-							}
-						}
-				);
-			} catch (Exception ex){
+				findAndHookMethod(className, lpparam.classLoader, methodName,
+						int.class,
+						XC_MethodReplacement.returnConstant(true));
+			} catch (Throwable e){
 				hooked = false;
+				LogE(e);
 			}
-			if (hooked)
-				if(isDebug)
-					Log.e(TAG, "Hooked 0 " + lpparam.packageName);
+			LogE(hooked, className, methodName);
 
-			//this MUST disable request PIN at all - DANGEROUS
-			/*
-			try {
-				hooked = true;
-				findAndHookMethod("com.android.keyguard.KeyguardUpdateMonitor", lpparam.classLoader,
-						"getUserCanSkipBouncer", int.class, new XC_MethodReplacement()
-						{
-							@Override
-							protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-								if(isDebug)
-									Log.e(TAG, "getUserCanSkipBouncer for <" + lpparam.packageName + ">");
-								return true;
-							}
-						}
-				);
-			} catch (Exception ex){
-				hooked = false;
-			}
-
-			if (hooked)
-				if(isDebug)
-					Log.e(TAG, "Hooked 1: " + lpparam.packageName);
-			*/
-
-			try {
-				hooked = true;
-				findAndHookMethod("com.android.keyguard.KeyguardUpdateMonitor", lpparam.classLoader,
-						"isUnlockingWithFingerprintAllowed", new XC_MethodReplacement() {
-							@Override
-							protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-								if(isDebug)
-									Log.e(TAG, "isUnlockingWithFingerprintAllowed for <" + lpparam.packageName + ">");
-								return true;
-							}
-						}
-				);
-
-			} catch (Exception ex){
-				hooked = false;
-			}
-			if (hooked)
-				if(isDebug)
-					Log.e(TAG, "Hooked 2: " + lpparam.packageName);
-
-			try {
-				hooked = true;
-				findAndHookMethod("com.android.keyguard.KeyguardUpdateMonitor$StrongAuthTracker", lpparam.classLoader,
-						"isUnlockingWithFingerprintAllowed", new XC_MethodReplacement() {
-							@Override
-							protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-								if(isDebug)
-									Log.e(TAG, "isUnlockingWithFingerprintAllowed.Strong for <" + lpparam.packageName + ">");
-								return true;
-							}
-						}
-				);
-			}
-			catch (Exception ex)
-			{
-				hooked = false;
-			}
-			if (hooked)
-				if(isDebug)
-					Log.e(TAG, "Hooked 3: " + lpparam.packageName);
-
-			/*
-			try {
-				hooked = true;
-				findAndHookMethod("com.android.internal.widget.isFingerPrintEnabled", lpparam.classLoader,
-						"isLockFingerprintEnabled", int.class, new XC_MethodReplacement() {
-							@Override
-							protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-								if(isDebug)
-									Log.e(TAG, "isLockFingerprintEnabled for <" + lpparam.packageName + ">");
-								return true;
-							}
-						}
-				);
-			}
-			catch (Exception ex)
-			{
-				hooked = false;
-			}
-			if (hooked)
-				if(isDebug)
-					Log.e(TAG, "Hooked 4: " + lpparam.packageName);
-			*/
-
-		//}
+		}
 
 	}
 }
