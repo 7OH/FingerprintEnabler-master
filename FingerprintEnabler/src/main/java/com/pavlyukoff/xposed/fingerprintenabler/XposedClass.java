@@ -98,17 +98,6 @@ public class XposedClass extends Application implements IXposedHookLoadPackage {
 			LogE(hooked, className, methodName);
 
 			// 00.04 -------------------------------------------------------------------------------
-			methodName	= "shouldListenForFingerprint";
-			try {
-				findAndHookMethod(className, lpparam.classLoader, methodName,
-						XC_MethodReplacement.returnConstant(true));
-			} catch (Throwable e) {
-				hooked = false;
-				LogE(e);
-			}
-			LogE(hooked, className, methodName);
-
-			// 00.05 -------------------------------------------------------------------------------
 			methodName	= "isUnlockCompleted";
 			try {
 				findAndHookMethod(className, lpparam.classLoader, methodName,
