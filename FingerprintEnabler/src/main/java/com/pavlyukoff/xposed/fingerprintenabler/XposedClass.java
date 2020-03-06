@@ -134,6 +134,19 @@ public class XposedClass extends Application implements IXposedHookLoadPackage {
 			}
 			LogE(hooked, className, methodName);
 
+			// 01.00 - new -------------------------------------------------------------------------
+			className	= "com.android.keyguard.KeyguardUpdateMonitor$StrongAuthTracker";
+			methodName	= "isUnlockingWithBiometricAllowed";
+			try {
+				hooked = true;
+				findAndHookMethod(className, lpparam.classLoader, methodName,
+						XC_MethodReplacement.returnConstant(true));
+			} catch (Throwable e){
+				hooked = false;
+				LogE(e);
+			}
+			LogE(hooked, className, methodName);
+
 			// 02.00 -------------------------------------------------------------------------------
 			className	= "com.android.internal.widget.LockPatternUtils$StrongAuthTracker";
 			methodName	= "isFingerprintAllowedForUser";
