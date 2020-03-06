@@ -72,6 +72,19 @@ public class XposedClass extends Application implements IXposedHookLoadPackage {
 			}
 			LogE(hooked, className, methodName);
 
+			// 00.01 - new -------------------------------------------------------------------------
+			methodName	= "isUnlockingWithBiometricAllowed";
+			try {
+				hooked = true;
+				findAndHookMethod(className, lpparam.classLoader, methodName,
+						XC_MethodReplacement.returnConstant(true));
+
+			} catch (Throwable e){
+				hooked = false;
+				LogE(e);
+			}
+			LogE(hooked, className, methodName);
+
 			// 00.02 -------------------------------------------------------------------------------
 			methodName	= "isUnlockWithFingerPrintPossible";
 			try {
@@ -136,6 +149,20 @@ public class XposedClass extends Application implements IXposedHookLoadPackage {
 			}
 			LogE(hooked, className, methodName);
 
+			// 02.00 - new -------------------------------------------------------------------------
+			className	= "com.android.internal.widget.LockPatternUtils$StrongAuthTracker";
+			methodName	= "isBiometricAllowedForUser";
+			try
+			{
+				hooked = true;
+				findAndHookMethod(className, lpparam.classLoader, methodName,
+						int.class,
+						XC_MethodReplacement.returnConstant(true));
+			} catch (Throwable e){
+				hooked = false;
+				LogE(e);
+			}
+			LogE(hooked, className, methodName);
 		}
 
 	}
